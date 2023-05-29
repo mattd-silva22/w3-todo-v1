@@ -119,4 +119,11 @@ export const TasksTable = styled.ul`
       }
     }
   }
+
+  .taskRow.complete {
+    .title-area{
+      text-decoration: line-through;
+    }
+    color: var(--text-light);
+  }
 `;

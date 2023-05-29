@@ -84,7 +84,7 @@ export function TaskList() {
 
 
           {taskList? taskList.map(item => (
-            <li className="taskRow">
+            <li className={`taskRow ${item.concluida? "complete" : ""}`}>
             <div className="title-area">
               <div className="task-checker" onClick={()=>{handleCompleteTask(item)}}>
                 {item.concluida? <CheckSquare size="16px"/> : <Square size="16" />}
