@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { idText } from "typescript";
 import { Database } from "../database/database";
 import { Task } from "../interface/task.interface";
 import { TaskBodyRequest } from "../interface/taskBodyRequest.interface";
@@ -11,29 +12,70 @@ export class TasksServices {
   }
 
   public createTasks(req: TaskBodyRequest<Task>, res: Response) {
-    const {task} = req.body
-    const newtaskId = this.database.add(task);
-    return res.status(200).send(
-      { message: "tarefa criada" , id : newtaskId });
+    try {
+      const {task} = req.body
+      if(task){
+        const newtaskId = this.database.add(task);
+        return res.status(200).send(
+          { message: "tarefa criada" , id : newtaskId });
+      } else{
+        return res.status(400).send({ message: "Bad request" });
+      }
+      
+    } catch (error) {
+      return res.status(500).send({ message: "server error" });
+    }
+   
+    
   }
 
   public updateTasks(req: TaskBodyRequest<Task>, res: Response) {
-    const {task} = req.body
-    this.database.update(task)
-    return res.status(200).send({ message: "tarefa atualizada" });
+    
+    try {
+      const {task} = req.body
+      if(task) {
+        const resp = this.database.update(task)
+        if(resp){
+          return res.status(200).send({ message: "tarefa atualizada" });
+        } else{
+          return res.status(400).send({ message: "Tarefa não localizada - id invalido" });
+        }
+        } else {
+          return res.status(400).send({ message: "Bad request" });
+        }
+        
+      } 
+     catch (error) {
+      return res.status(500).send({ message: "server error" });
+    }
   }
 
   public deleteTasks( taskId:string, res: Response) {
-    const resp = this.database.remove(taskId)
-    if(resp){
-      return res.status(200).send({ message: "Tarefa deletada" });
-    } else {
-      return res.status(404).send({ message: "tarefa não encontrada" });
+
+    try {
+      if(taskId){
+        const resp = this.database.remove(taskId)
+        if(resp){
+          return res.status(200).send({ message: "Tarefa deletada" });
+        } else {
+          return res.status(404).send({ message: "tarefa não encontrada" });
+        }
+      } else {
+        return res.status(400).send({ message: "Bad request" });
+      }
+      
+    } catch (error) {
+      return res.status(500).send({ message: "server error" });
     }
     
   }
 
   public getAllTasks(req: Request, res: Response) {
-    return res.status(200).send({ tasks: this.database.findMany()});
+    try {
+      return res.status(200).send({ tasks: this.database.findMany()});
+    } catch (error) {
+      return res.status(500).send({ message: "server error" });
+    }
+   
   }
 }
